@@ -8,11 +8,22 @@ FROM debian:buster
 # pkg: apt-transport-https
 RUN apt-get update && \
     apt-get install -y \
-        apt-transport-https && \
+        apt-transport-https \
+	ca-certificates && \
     apt clean all
 
 # apt: sources.list
 COPY config/sources.list /etc/apt/sources.list
+
+# pkg: dependencies
+RUN apt-get update && \
+	apt-get upgrade -y && \
+	apt install -y \
+		wget \
+		sudo \
+		gnupg2 \
+		libgbm-dev \
+		libasound2
 
 # pkg: beekeeper-studio
 RUN wget --quiet -O - https://deb.beekeeperstudio.io/beekeeper.key | sudo apt-key add - && \
@@ -21,4 +32,5 @@ RUN wget --quiet -O - https://deb.beekeeperstudio.io/beekeeper.key | sudo apt-ke
     apt install -y beekeeper-studio && \
     apt clean all
 
-ENTRYPOINT [ "beekeeper-studio" ]
+# default: launch process
+ENTRYPOINT [ "/opt/Beekeeper*/beekeeper-studio" ]
